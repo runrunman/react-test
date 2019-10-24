@@ -96,5 +96,7 @@ const { Item } = Form
     )
   }
 }
-const LoginWrap = Form.create()(Login)
-export default LoginWrap
+ const LoginWrap = Form.create()(Login)
+ export default LoginWrap
+
+// export default Form.create()(login)
