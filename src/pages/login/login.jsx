@@ -1,99 +1,100 @@
-import React, {Component} from 'react'
-import {
-  Form,
-  Input,
-  Icon,
-  Button,
-} from 'antd'
+/* 
+登陆的一级路由组件
+*/
+import React, { Component } from 'react'
+import { Form, Icon, Input, Button } from 'antd'
+
 import logo from './images/logo.png'
 import './login.less'
 
-const Item = Form.Item
+const { Item } = Form 
 
-/*
-登陆路由组件
- */
-class Login extends Component {
+ class Login extends Component {
 
-  login = (e) => {
-    e.preventDefault()
-
-    this.props.form.validateFields(async (err, values) => {
+  handleSubmit = (event) => {
+    event.preventDefault()
+    this.props.form.validateFields((err, values) => {
       if (!err) {
-        const {username, password} = values
-        console.log('提交登陆请求', username, password)
-      } else {
-        console.log(err)
+        console.log('Received values of form: ', values);
+      }else{
+
       }
-    })
+    });
+    // const form = this.props.form
+    // const username = form.getFieldValue('username')
+    // const password = form.getFieldValue('password')
+    // const values = form.getFieldValue()
   }
 
-  validator = (rule, value, callback) => {
-    // console.log(rule, value)
-    const length = value && value.length
-    const pwdReg = /^[a-zA-Z0-9_]+$/
-    if (!value) {
-      callback('必须输入密码')
-    } else if (length < 4) {
-      callback('密码必须大于4位')
-    } else if (length > 12) {
-      callback('密码必须小于12位')
-    } else if (!pwdReg.test(value)) {
-      callback('密码必须是英文、数组或下划线组成')
-    } else {
-      callback() // 必须调用callback
+  validatePwd = (rule, value, callback) => {
+    value = value.trim()
+    if (value===''){
+      callback('密码必须输入')
+    } else if (value.length<4) {
+      callback('密码必须大于等于4位')
+    }else if (value.length>12) {
+      callback('密码必须小于等于12位')
+    }else if(!/^[a-zA-Z0-9_]+$/.test(value)){
+      callback('密码必须是英文、数字或下划线组成')
+    }else {
+      callback()
     }
   }
-
   render() {
 
-    const {getFieldDecorator} = this.props.form
+    const { getFieldDecorator } = this.props.form;
     return (
-      <div className='login'>
-        <header className='login-header'>
+      <div className="login">
+        <header className="login-header">
           <img src={logo} alt="logo"/>
-          <h1>React项目: 后台管理系统</h1>
+          <h1>后台管理系统</h1>
         </header>
-        <section className='login-content'>
-          <h3>用户登陆</h3>
-          <Form onSubmit={this.login} className="login-form">
+        <div className="login-content">
+          <h1>用户登陆</h1>
+          <Form onSubmit={this.handleSubmit} className="login-form">
             <Item>
-              {
-                getFieldDecorator('username', {
-                  rules: [
-                    {required: true, whitespace: true, message: '必须输入用户名'},
-                    {min: 4, message: '用户名必须大于4位'},
-                    {max: 12, message: '用户名必须小于12位'},
-                    {pattern: /^[a-zA-Z0-9_]+$/, message: '用户名必须是英文、数组或下划线组成'}
-                  ]
-                })(
-                  <Input prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>} placeholder="用户名"/>
-                )
-              }
+            {
+              getFieldDecorator('username',{
+                initialValue: '',
+                rules: [
+                  { required: true, whitespace: true,  message: '用户名必须输入'},
+                  { min:4,message: '用户名不能小于4位'},
+                  { max: 12, message: '用户名不能大于12位'},
+                  { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名必须是英文、数字或下划线组成'},
+                ],
+              })(
+                <Input
+                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    placeholder="用户名"
+                  />
+              )
+            }
             </Item>
-            <Item>
-              {
-                getFieldDecorator('password', {
-                  rules: [
-                    {validator: this.validator}
-                  ]
-                })(
-                  <Input prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>} type="password"
-                         placeholder="密码"/>
-                )
-              }
-            </Item>
-            <Item>
-              <Button type="primary" htmlType="submit" className="login-form-button">
-                登录
-              </Button>
-            </Item>
+            <Form.Item>
+            {
+              getFieldDecorator('password',{
+                initialValue: '',
+                rules: [
+                  {validator: this.validatePwd}
+                ]
+              })(
+                <Input
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  type="password"
+                  placeholder="密码"
+                />
+              )
+            }
+              
+            </Form.Item>
+            <Form.Item>
+            <Button type="primary" htmlType="submit" className="login-form-button">登陆</Button>
+            </Form.Item>
           </Form>
-        </section>
+        </div>
       </div>
     )
   }
 }
-
-
-export default Form.create()(Login)
+const LoginWrap = Form.create()(Login)
+export default LoginWrap
