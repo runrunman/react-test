@@ -1,19 +1,20 @@
-import React, {Component} from 'react'
-import {BrowserRouter, Switch, Route} from 'react-router-dom'
 
-import Login from './pages/login/login'
-import Admin from './pages/admin/admin'
-class App extends Component {
-  render() {
+import React, {Component} from 'react'
+import {Router, Route, Switch} from 'react-router-dom'
+import Login from "./containers/login"
+import Admin from "./containers/admin"
+import history from './history'
+
+export default class App extends Component {
+
+  render () {
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route path='/login' component={Login}/>
-          <Route path='/' component={Admin}/>
+      <Router history={history}>
+        <Switch> 
+          <Route path="/login" component={Login} exact/>
+          <Route path="/" component={Admin}/>
         </Switch>
-      </BrowserRouter>
+      </Router>
     )
   }
 }
-
-export default App

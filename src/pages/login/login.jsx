@@ -9,10 +9,6 @@ import logo from './images/logo.png'
 import './login.less'
 
 const Item = Form.Item
-
-/*
-登陆路由组件
- */
 class Login extends Component {
 
   render() {
