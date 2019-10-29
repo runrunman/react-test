@@ -7,65 +7,87 @@ import {
   Modal,
   message
 } from 'antd'
-import { reqCategorys } from '../../api'
+import {connect} from 'react-redux'
+import { reqCategorys ,reqUpdateCategory } from '../../api'
 import LinkButton from '../../components/link-button'
-const columns = [
-  {
-    title: '分类名称',
-    dataIndex: 'name',
-  },
-  {
-    width:300,
-    title:'操作',
-    render:() =><LinkButton>修改分类</LinkButton>
-  }
-]
-export default class Category extends Component {
+import AddUpdateForm from './add-update-form'
+@connect(
+  state => ({categorys:state.categorys}),
+
+)
+ class Category extends Component {
   state = {
     categorys: [],
     loading:false,
   }
+   columns = [
+    {
+      title: '分类名称',
+      dataIndex: 'name',
+    },
+    {
+      width:300,
+      title:'操作',
+      render:() =><LinkButton>修改分类</LinkButton>
+    }
+  ]
   getCategorys = async() => {
     this.setState({
       loading:true
     })
-    const result = await reqCategorys()
+    const msg = await this.props.getCategoryAsync()
     this.setState({
       loading: false
     })
-    if(result.status ===0){
-      const categorys = result.data
-      this.setState({
-        categorys
-      })
-    }else {
-      message.error(result.msg)
+    if (msg){
+      message.error(msg)
     }
   }
-
   componentDidMount (){
     this.getCategorys()
   }
   render(){
-    const {categorys,loading } =this.state
+    const {loading, isShowAdd} = this.state
+    const {categorys} =this.props
+
     const estra =(
-      <Button type="primary">
+      <Button type="primary" onClick={()=>this.setState(
+        {isShowAdd:true})}>
         <Icon type="plus"></Icon>
         添加
       </Button>
     )
   
   return (
-    <Card extra={extra}>
+    <Card >
       <Table 
         bordered
         loading={loading}
         dataSource={categorys} 
-        columns={columns} 
+        // columns={columns} 
         rowKey="_id"
         pagination={{pageSize: 5, showQuickJumper: true}}
       />
+      <Modal
+        title="添加分类"
+        visible={isShowAdd}
+        onOk={this.addCategory}
+        onCancel={this.hideAdd}
+      >
+        {/* <AddUpdateForm setForm = {() =>{}}/> */}
+      </Modal>
+      <Modal
+        title="修改分类"
+        visible={isShowAdd}
+        onOk={this.addCategory}
+        onCancel={this.hideAdd}
+      >
+        <AddUpdateForm setForm = {(form) =>this.form = form}
+        categoryName={categorys.name}
+        />
+      </Modal>
     </Card>
   )
   }
 }
+export default Category
